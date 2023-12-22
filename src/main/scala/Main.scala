@@ -18,9 +18,9 @@ object Main extends ZIOAppDefault {
     override val delimiter: Char = ';'
   }
 
-  private def loadCsv(filename: String, options: CSVFormat = DefaultCSVFormat): ZStream[Any, Throwable, Seq[String]] = {
+  private def loadCsv(filename: String)(implicit format: CSVFormat): ZStream[Any, Throwable, Seq[String]] = {
     val url = getClass.getClassLoader.getResource(filename)
-    val source = CSVReader.open(url.getFile)(options)
+    val source = CSVReader.open(url.getFile)(format)
     ZStream.fromIterator[Seq[String]](source.iterator)
   }
 
