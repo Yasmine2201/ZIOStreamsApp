@@ -18,40 +18,45 @@ object Main extends ZIOAppDefault {
     override val delimiter: Char = ';'
   }
 
-  private def loadCsv(filename: String)(implicit format: CSVFormat): ZStream[Any, Throwable, Seq[String]] = {
+  private def loadCsv(filename: String)(implicit format: CSVFormat): CSVReader = {
     val url = getClass.getClassLoader.getResource(filename)
-    val source = CSVReader.open(url.getFile)(format)
-    ZStream.fromIterator[Seq[String]](source.iterator)
+    CSVReader.open(url.getFile)(format)
   }
 
-//  private def loadCarbonIntensity(): ZStream[Any, Throwable, CarbonIntensityPerHour] = {
-//    for {
-//      stream <- loadCsv("FR_2021_hourly.csv")
-//        .merge(loadCsv("FR_2022_hourly.csv"))
-//        .drop(1)
-//        .map[Option[CarbonIntensityPerHour]](line =>
-//          try {
-//            val dateTime = LocalDateTime.parse(line.head)
-//            val directIntensity = CarbonIntensity(line(1).toFloat)
-//            val lcaIntensity = CarbonIntensity(line(2).toFloat)
-//            val lowCarbonPercent = Percentage(line(3).toFloat)
-//            val renewablePercent = Percentage(line(4).toFloat)
-//
-//            Some(
-//              CarbonIntensityPerHour(
-//                dateTime,
-//                directIntensity,
-//                lcaIntensity,
-//                lowCarbonPercent,
-//                renewablePercent
-//              )
-//            )
-//          } catch {
-//            case _: Throwable => None
-//          }
-//        )
-//    } yield stream
-//  }
+  private def loadCarbonIntensity(): ZStream[Any, Throwable, CarbonIntensityPerHour] = {
+    for {
+      file_2021 <- ZIO.succeed(loadCsv("FR_2021_hourly.csv"))
+      file_2022 <- ZIO.succeed(loadCsv("FR_2022_hourly.csv"))
+      stream: Int <- ZStream
+        .fromIterator[Seq[String]](file_2021.iterator)
+        .drop(1)
+        .merge(ZStream.fromIterator[Seq[String]](file_2022.iterator).drop(1))
+        .map[Option[CarbonIntensityPerHour]](line =>
+          try {
+            val dateTime = LocalDateTime.parse(line.head)
+            val directIntensity = CarbonIntensity(line(1).toFloat)
+            val lcaIntensity = CarbonIntensity(line(2).toFloat)
+            val lowCarbonPercent = Percentage(line(3).toFloat)
+            val renewablePercent = Percentage(line(4).toFloat)
+
+            Some(
+              CarbonIntensityPerHour(
+                dateTime,
+                directIntensity,
+                lcaIntensity,
+                lowCarbonPercent,
+                renewablePercent
+              )
+            )
+          } catch {
+            case _: Throwable => None
+          }
+        )
+        .collectSome[CarbonIntensityPerHour]
+      _ <- ZIO.succeed(file_2021.close())
+      _ <- ZIO.succeed(file_2022.close())
+    } yield stream
+  }
 
 //  private def loadEcoMix() = {
 //    for {
