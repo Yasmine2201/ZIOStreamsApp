@@ -1,14 +1,8 @@
-import zio._
-import zio.stream._
+import zio.*
 
 object Main extends ZIOAppDefault {
 
-  override def run: ZIO[Any & (ZIOAppArgs & Scope), Any, Unit] =
-    for {
-      _ <- ZStream.fromIterable((1 to 10000).toList)
-        .take(10)
-        .map(_ * 2)
-        .foreach(Console.printLine(_))
-    } yield ()
+  override def run: ZIO[Any & (ZIOAppArgs & Scope), Any, Unit] = {
 
+  }
 }

@@ -12,7 +12,8 @@ lazy val root = project
     name := "my-project",
     libraryDependencies ++= Seq(
       "dev.zio" %% "zio" % zioVersion,
-      "dev.zio" %% "zio-streams" % zioVersion
+      "dev.zio" %% "zio-streams" % zioVersion,
+      "io.github.iltotore" %% "iron" % "2.0.0"
     ),
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
   )
