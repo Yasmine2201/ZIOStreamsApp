@@ -1,7 +1,7 @@
 import zio.*
 import zio.stream.ZStream
 import com.github.tototoshi.csv.{CSVFormat, DefaultCSVFormat, *}
-import io.github.iltotore.iron.autoRefine
+import io.github.iltotore.iron.*
 
 import java.time.LocalDateTime
 import java.time.LocalDate
@@ -11,6 +11,8 @@ import ConsumptionValues._
 import Percentages._
 import PowerValues._
 import TemperatureValues._
+import java.time.format.DateTimeFormatter
+import scala.util.Try
 
 object Main extends ZIOAppDefault {
 
@@ -23,52 +25,93 @@ object Main extends ZIOAppDefault {
     CSVReader.open(url.getFile)(format)
   }
 
-  private def loadCarbonIntensity(): ZStream[Any, Throwable, CarbonIntensityPerHour] = {
+  private def loadCarbonIntensity: ZIO[Any, Throwable, zio.Chunk[CarbonIntensityPerHour]] = {
     for {
       file_2021 <- ZIO.succeed(loadCsv("FR_2021_hourly.csv"))
       file_2022 <- ZIO.succeed(loadCsv("FR_2022_hourly.csv"))
-      stream: Int <- ZStream
+      stream <- ZStream
         .fromIterator[Seq[String]](file_2021.iterator)
         .drop(1)
         .merge(ZStream.fromIterator[Seq[String]](file_2022.iterator).drop(1))
         .map[Option[CarbonIntensityPerHour]](line =>
-          try {
-            val dateTime = LocalDateTime.parse(line.head)
-            val directIntensity = CarbonIntensity(line(1).toFloat)
-            val lcaIntensity = CarbonIntensity(line(2).toFloat)
-            val lowCarbonPercent = Percentage(line(3).toFloat)
-            val renewablePercent = Percentage(line(4).toFloat)
+          val dateTime         = Try(LocalDateTime.parse(line.head, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).toOption
+          val directIntensity  = line(4).toFloatOption
+          val lcaIntensity     = line(5).toFloatOption
+          val lowCarbonPercent = line(6).toFloatOption
+          val renewablePercent = line(7).toFloatOption
 
-            Some(
-              CarbonIntensityPerHour(
-                dateTime,
-                directIntensity,
-                lcaIntensity,
-                lowCarbonPercent,
-                renewablePercent
-              )
-            )
-          } catch {
-            case _: Throwable => None
-          }
+          for {
+            dateTime         <- dateTime
+            directIntensity  <- directIntensity
+            lcaIntensity     <- lcaIntensity
+            lowCarbonPercent <- lowCarbonPercent
+            renewablePercent <- renewablePercent
+          } yield CarbonIntensityPerHour(
+            dateTime,
+            directIntensity,
+            lcaIntensity,
+            lowCarbonPercent,
+            renewablePercent
+          )
         )
         .collectSome[CarbonIntensityPerHour]
+        .runCollect
       _ <- ZIO.succeed(file_2021.close())
       _ <- ZIO.succeed(file_2022.close())
-    } yield stream
+    } yield (stream)
   }
 
-//  private def loadEcoMix() = {
-//    for {
-//      stream <- loadCsv("eco2mix-national-tr.csv", SemiColonFormat)
-//        .drop(1)
-//        .map[Option[ElectricityProductionAndConsumption]] (line => {
-//          val date = LocalDate.parse(line(2),)
-//        }
-//
-//        )
-//    } yield()
-//  }
+  private def loadEcoMix: ZIO[Any, Throwable, zio.Chunk[ElectricityProductionAndConsumption]] = {
+    for {
+      file <- ZIO.succeed(loadCsv("eco2mix-national-tr.csv")(SemiColonFormat))
+      stream <- ZStream
+        .fromIterator[Seq[String]](file.iterator)
+        .drop(1)
+        .map[Option[ElectricityProductionAndConsumption]](line =>
+          val dateTime = Try(LocalDateTime.parse(line(4), DateTimeFormatter.ISO_DATE_TIME)).toOption
+
+          val consumption = line(5).toIntOption
+
+          val fuelPower    = line(8).toIntOption
+          val coalPower    = line(9).toIntOption
+          val gasPower     = line(10).toIntOption
+          val nuclearPower = line(11).toIntOption
+          val windPower    = line(12).toIntOption
+          val solarPower   = line(15).toIntOption
+          val hydroPower   = line(16).toIntOption
+          val bioPower     = line(18).toIntOption
+
+          for {
+            dateTime     <- dateTime
+            consumption  <- consumption
+            fuelPower    <- fuelPower
+            coalPower    <- coalPower
+            gasPower     <- gasPower
+            nuclearPower <- nuclearPower
+            windPower    <- windPower
+            solarPower   <- solarPower
+            hydroPower   <- hydroPower
+            bioPower     <- bioPower
+          } yield ElectricityProductionAndConsumption(
+            dateTime,
+            Seq(
+              ElectricityProductionPerSupplyChain(SupplyChain.Fuel, fuelPower),
+              ElectricityProductionPerSupplyChain(SupplyChain.Coal, coalPower),
+              ElectricityProductionPerSupplyChain(SupplyChain.Gas, gasPower),
+              ElectricityProductionPerSupplyChain(SupplyChain.Nuclear, nuclearPower),
+              ElectricityProductionPerSupplyChain(SupplyChain.Wind, windPower),
+              ElectricityProductionPerSupplyChain(SupplyChain.Solar, solarPower),
+              ElectricityProductionPerSupplyChain(SupplyChain.Hydro, hydroPower),
+              ElectricityProductionPerSupplyChain(SupplyChain.Bio, bioPower)
+            ),
+            consumption
+          )
+        )
+        .collectSome[ElectricityProductionAndConsumption]
+        .runCollect
+      _ <- ZIO.succeed(file.close())
+    } yield (stream)
+  }
 
 //  private def loadRawConso() = {
 //    for {
@@ -89,8 +132,9 @@ object Main extends ZIOAppDefault {
 
   override def run: ZIO[Any & (ZIOAppArgs & Scope), Any, Unit] = {
     for {
-      url <- ZIO.succeed(loadCsv("conso_brute_corrigee_client_direct.csv"))
-
+      _ <- ZIO.succeed(println("Hello world!"))
+      _ <- loadCarbonIntensity.map(_.foreach(println(_)))
+      _ <- loadEcoMix.map(_.foreach(println(_)))
     } yield ()
   }
 }
