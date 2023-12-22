@@ -13,7 +13,8 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "dev.zio" %% "zio" % zioVersion,
       "dev.zio" %% "zio-streams" % zioVersion,
-      "io.github.iltotore" %% "iron" % "2.0.0"
+      "io.github.iltotore" %% "iron" % ironVersion,
+      "com.github.tototoshi" %% "scala-csv" % scalaCsv,
     ),
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
   )
