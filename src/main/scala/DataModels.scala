@@ -41,10 +41,19 @@ object ConsumptionValues {
   }
 }
 
+object TemperatureValues {
+  opaque type Temperature = Float
+
+  object Temperature {
+    def apply(value: Float): Temperature = value
+  }
+}
+
 import CarbonIntensities._
 import ConsumptionValues._
 import Percentages._
 import PowerValues._
+import TemperatureValues._
 
 // Intensité carbone de l'électricité en France, par heure, en 2021 et 2022
 
@@ -83,7 +92,7 @@ case class ElectricityProductionAndConsumption(
 case class PowerPeakWithTemperature(
                                     dateTime: LocalDate,
                                     power: Power,
-                                    meanTemperature: Float,
-                                    referenceTemperature: Float
+                                    meanTemperature: Temperature,
+                                    referenceTemperature: Temperature
                                    )
 
