@@ -36,19 +36,25 @@ object PowerValues {
 }
 
 object ConsumptionValues {
-  opaque type HourlyConsumption  = Int
-  opaque type MonthlyConsumption = Int
+  opaque type Consumption        = Float
+  opaque type HourlyConsumption  = Consumption
+  opaque type MonthlyConsumption = Consumption
 
-  object HourlyConsumption {
-    def apply(value: Int): HourlyConsumption = value
+  // allow conversion from int to float for consumption values
+
+  object Consumption {
+    def apply(value: Float | Int): HourlyConsumption | MonthlyConsumption = {
+      value match {
+        case value: Float => value
+        case value: Int   => value.toFloat
+      }
+    }
   }
 
-  object MonthlyConsumption {
-    def apply(value: Int): MonthlyConsumption = value
-  }
-
-  given Conversion[Int, HourlyConsumption]  = HourlyConsumption(_)
-  given Conversion[Int, MonthlyConsumption] = MonthlyConsumption(_)
+  given Conversion[Float, HourlyConsumption]  = Consumption(_)
+  given Conversion[Float, MonthlyConsumption] = Consumption(_)
+  given Conversion[Int, HourlyConsumption]    = Consumption(_)
+  given Conversion[Int, MonthlyConsumption]   = Consumption(_)
 }
 
 object TemperatureValues {
@@ -57,6 +63,8 @@ object TemperatureValues {
   object Temperature {
     def apply(value: Float): Temperature = value
   }
+
+  given Conversion[Float, Temperature] = Temperature(_)
 }
 
 import CarbonIntensities._
