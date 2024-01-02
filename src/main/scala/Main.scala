@@ -113,28 +113,73 @@ object Main extends ZIOAppDefault {
     } yield (stream)
   }
 
-//  private def loadRawConso() = {
-//    for {
-//      stream <- loadCsv("conso_brute_corrigee_client_direct.csv", SemiColonFormat)
-//        .drop(1)
-//        .map[Option[ElectricityConsumptionPerMonth]](line =>
-//          line match
-//      )
-//    } yield ()
-//  }
 
-//  private def loadPeakConso() = {
-//    for {
-//      stream <- loadCsv(("pic-journalier-consommation-brute.csv", SemiColonFormat)
-//        .map[Option[PowerPeakWithTemperature]](line)
-//    } yield ()
-//  }
+  private def loadRawConso: ZIO[Any, Throwable, zio.Chunk[ElectricityConsumptionPerMonth]] = {
+    for {
+      file <- ZIO.succeed(loadCsv("conso_brute_corrigee_client_direct.csv")(SemiColonFormat))
+      stream <- ZStream
+        .fromIterator[Seq[String]](file.iterator)
+        .drop(1)
+        .map[Option[ElectricityConsumptionPerMonth]](line =>
+          val monthYearParts: Array[String] = line.head.split("-")
+          val monthYearOption: Option[MonthYear] = Try {
+          val month: Int = monthYearParts(0).toInt
+          val year: Int = monthYearParts(1).toInt
+          MonthYear(month, year)
+          }.toOption
+          val rawConsumptionOption: Option[Int] = line(1).toIntOption
+          val correctedConsumptionOption: Option[Int] = line(2).toIntOption
+          for {
+          monthYear <- monthYearOption
+          rawConsumption <- rawConsumptionOption
+          correctedConsumption <- correctedConsumptionOption
+        } yield ElectricityConsumptionPerMonth(monthYear, rawConsumption, correctedConsumption)
+        ).collectSome[ElectricityConsumptionPerMonth]
+        .runCollect
+      _ <- ZIO.succeed(file.close())
+    } yield (stream)
+  }
+
+
+
+  private def loadPeakConso: ZIO[Any, Throwable, zio.Chunk[PowerPeakWithTemperature]] = {
+    for {
+      file <- ZIO.succeed(loadCsv("pic-journalier-consommation-brute.csv"))
+      
+      stream <- ZStream
+        .fromIterator[Seq[String]](file.iterator)
+        .drop(1)
+        .map[Option[PowerPeakWithTemperature]](line =>
+          val dateTime             = Try(LocalDate.parse(line.head, DateTimeFormatter.ofPattern("yyyy-MM-dd"))).toOption
+          val power                = line(1).toIntOption
+          val meanTemperature      = line(2).toFloatOption
+          val referenceTemperature = line(3).toFloatOption
+          for {
+            dateTime              <- dateTime
+            power                 <- power
+            meanTemperature       <- meanTemperature
+            referenceTemperature  <- referenceTemperature
+           
+          } yield PowerPeakWithTemperature(
+            dateTime,
+            power,
+            meanTemperature,
+            referenceTemperature 
+          )
+        )
+        .collectSome[PowerPeakWithTemperature]
+        .runCollect
+      _ <- ZIO.succeed(file.close())
+     
+    } yield (stream)
+  }
 
   override def run: ZIO[Any & (ZIOAppArgs & Scope), Any, Unit] = {
     for {
       _ <- ZIO.succeed(println("Hello world!"))
-      _ <- loadCarbonIntensity.map(_.foreach(println(_)))
-      _ <- loadEcoMix.map(_.foreach(println(_)))
+      _ <- loadPeakConso.map(_.foreach(println(_)))
+    
+      
     } yield ()
   }
 }

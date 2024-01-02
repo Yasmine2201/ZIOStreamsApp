@@ -57,6 +57,7 @@ object TemperatureValues {
   object Temperature {
     def apply(value: Float): Temperature = value
   }
+  given Conversion[Float, Temperature]  = Temperature(_)
 }
 
 import CarbonIntensities._
