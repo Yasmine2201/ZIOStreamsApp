@@ -65,48 +65,40 @@ object DataLoader {
   }
 
   def loadEcoMix: ZIO[Any, Throwable, zio.Chunk[ElectricityProductionAndConsumption]] = {
+    implicit class SupplyChainSeqOperations(val seq: Seq[ElectricityProductionPerSupplyChain]) {
+      def maybeAppendToSeq(maybeValue: String, supplyChain: SupplyChain): Seq[ElectricityProductionPerSupplyChain] = {
+        maybeValue.toIntOption match {
+          case Some(value) => seq :+ ElectricityProductionPerSupplyChain(supplyChain, value)
+          case None        => seq
+        }
+      }
+    }
+
     for {
       file <- ZIO.succeed(loadCsv("eco2mix-national-tr.csv")(SemiColonFormat))
       stream <- ZStream
         .fromIterator[Seq[String]](file.iterator)
         .drop(1)
         .map[Option[ElectricityProductionAndConsumption]](line =>
-          val dateTime = Try(LocalDateTime.parse(line(4), DateTimeFormatter.ISO_DATE_TIME)).toOption
-
+          val dateTime    = Try(LocalDateTime.parse(line(4), DateTimeFormatter.ISO_DATE_TIME)).toOption
           val consumption = line(5).toIntOption
 
-          val fuelPower    = line(8).toIntOption
-          val coalPower    = line(9).toIntOption
-          val gasPower     = line(10).toIntOption
-          val nuclearPower = line(11).toIntOption
-          val windPower    = line(12).toIntOption
-          val solarPower   = line(15).toIntOption
-          val hydroPower   = line(16).toIntOption
-          val bioPower     = line(18).toIntOption
+          val production = (Nil: Seq[ElectricityProductionPerSupplyChain])
+            .maybeAppendToSeq(line(8), SupplyChain.Fuel)
+            .maybeAppendToSeq(line(9), SupplyChain.Coal)
+            .maybeAppendToSeq(line(10), SupplyChain.Gas)
+            .maybeAppendToSeq(line(11), SupplyChain.Nuclear)
+            .maybeAppendToSeq(line(12), SupplyChain.Wind)
+            .maybeAppendToSeq(line(15), SupplyChain.Solar)
+            .maybeAppendToSeq(line(16), SupplyChain.Hydro)
+            .maybeAppendToSeq(line(18), SupplyChain.Bio)
 
           for {
-            dateTime     <- dateTime
-            consumption  <- consumption
-            fuelPower    <- fuelPower
-            coalPower    <- coalPower
-            gasPower     <- gasPower
-            nuclearPower <- nuclearPower
-            windPower    <- windPower
-            solarPower   <- solarPower
-            hydroPower   <- hydroPower
-            bioPower     <- bioPower
+            dateTime    <- dateTime
+            consumption <- consumption
           } yield ElectricityProductionAndConsumption(
             dateTime,
-            Seq(
-              ElectricityProductionPerSupplyChain(SupplyChain.Fuel, fuelPower),
-              ElectricityProductionPerSupplyChain(SupplyChain.Coal, coalPower),
-              ElectricityProductionPerSupplyChain(SupplyChain.Gas, gasPower),
-              ElectricityProductionPerSupplyChain(SupplyChain.Nuclear, nuclearPower),
-              ElectricityProductionPerSupplyChain(SupplyChain.Wind, windPower),
-              ElectricityProductionPerSupplyChain(SupplyChain.Solar, solarPower),
-              ElectricityProductionPerSupplyChain(SupplyChain.Hydro, hydroPower),
-              ElectricityProductionPerSupplyChain(SupplyChain.Bio, bioPower)
-            ),
+            production,
             consumption
           )
         )
