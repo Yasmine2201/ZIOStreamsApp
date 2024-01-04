@@ -1,8 +1,8 @@
 import io.github.iltotore.iron.:|
 import io.github.iltotore.iron.constraint.numeric.*
 
-import java.time.LocalDateTime
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
+
 import scala.Conversion
 
 object CarbonIntensities {
