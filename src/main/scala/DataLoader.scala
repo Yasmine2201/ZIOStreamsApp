@@ -1,21 +1,19 @@
-import zio.ZIO
-import zio.stream.ZStream
-import java.time.format.DateTimeFormatter
-import java.time.LocalDateTime
-
 import CarbonIntensities._
 import ConsumptionValues._
 import Percentages._
 import PowerValues._
 import TemperatureValues._
-import java.time.format.DateTimeFormatter
+
+import com.github.tototoshi.csv.{CSVReader, CSVFormat, DefaultCSVFormat, defaultCSVFormat}
+
+import zio.ZIO
+import zio.stream.ZStream
+
 import scala.util.Try
-import com.github.tototoshi.csv.CSVReader
-import com.github.tototoshi.csv.CSVFormat
-import com.github.tototoshi.csv.DefaultCSVFormat
-import com.github.tototoshi.csv.defaultCSVFormat
 import scala.annotation.static
-import java.time.LocalDate
+
+import java.time.{LocalDate, LocalDateTime}
+import java.time.format.DateTimeFormatter
 
 final case class ChunkedData(
     carbonIntensity: zio.Chunk[CarbonIntensityPerHour],
