@@ -1,4 +1,5 @@
-import zio.*
+import zio._
+import zio.Console._
 
 import DataLoader._
 
@@ -6,7 +7,7 @@ object Main extends ZIOAppDefault {
 
   override def run: ZIO[Any & (ZIOAppArgs & Scope), Any, Unit] = {
     for {
-      _ <- ZIO.succeed(println("Loading data..."))
+      _ <- printLine("Loading data...")
 
       // Load data
 
@@ -17,10 +18,25 @@ object Main extends ZIOAppDefault {
 
       // Print size of chunks
 
-      _ <- ZIO.succeed(println(s"Carbon intensity entries: ${carbonIntensity.size}"))
-      _ <- ZIO.succeed(println(s"Eco mix entries: ${ecoMix.size}"))
-      _ <- ZIO.succeed(println(s"Raw conso entries: ${rawConso.size}"))
-      _ <- ZIO.succeed(println(s"Peak conso entries: ${peakConso.size}"))
+      _ <- printLine(s"Carbon intensity entries: ${carbonIntensity.size}")
+      _ <- printLine(s"Eco mix entries: ${ecoMix.size}")
+      _ <- printLine(s"Raw conso entries: ${rawConso.size}")
+      _ <- printLine(s"Peak conso entries: ${peakConso.size}")
+
+      // Create analysis module
+
+      analysisModule = AnalysisModule(
+        ChunkedData(
+          carbonIntensity,
+          ecoMix,
+          rawConso,
+          peakConso
+        )
+      )
+
+      _    <- printLine("Hello, what is you name?")
+      name <- readLine
+      _    <- printLine(s"Hello $name, welcome to ZIO! ${analysisModule.getCarbonIntensityPerHour.size}")
     } yield ()
   }
 }
