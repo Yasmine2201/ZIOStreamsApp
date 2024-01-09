@@ -122,7 +122,7 @@ object DataLoader {
   }
 
   def loadRawConsos: ZIO[Any, Throwable, zio.Chunk[ElectricityConsumptionPerMonth]] = {
-    loadRawConsosFromUrl(getFullPath("conso-elec-annuelle-par-secteur-dactivite.csv"))
+    loadRawConsosFromUrl(getFullPath("conso_brute_corrigee_client_direct.csv"))
   }
 
   def loadRawConsosFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[ElectricityConsumptionPerMonth]] = {
@@ -157,7 +157,7 @@ object DataLoader {
   }
 
   def loadPeakConso: ZIO[Any, Throwable, zio.Chunk[PowerPeakWithTemperature]] = {
-    loadPeakConsoFromUrl(getFullPath("puissance-crête-avec-température.csv"))
+    loadPeakConsoFromUrl(getFullPath("pic-journalier-consommation-brute.csv"))
   }
 
   def loadPeakConsoFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[PowerPeakWithTemperature]] = {
