@@ -16,6 +16,13 @@ import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import java.net.URL
 
+final case class ChunkedData(
+    carbonIntensity: zio.Chunk[CarbonIntensityPerHour],
+    ecoMix: zio.Chunk[ElectricityProductionAndConsumption],
+    rawConso: zio.Chunk[ElectricityConsumptionPerMonth],
+    peakConso: zio.Chunk[PowerPeakWithTemperature]
+)
+
 object DataLoader {
 
   private object SemiColonFormat extends DefaultCSVFormat {
