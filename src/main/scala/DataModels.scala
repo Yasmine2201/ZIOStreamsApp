@@ -1,6 +1,7 @@
 import io.github.iltotore.iron.:|
 import io.github.iltotore.iron.constraint.numeric.*
 
+
 import java.time.{LocalDate, LocalDateTime}
 
 import scala.Conversion
@@ -33,6 +34,7 @@ object PowerValues {
   }
 
   given Conversion[Int, Power] = Power(_)
+  implicit val powerOrdering: Ordering[Power] = Ordering.Int
 }
 
 object ConsumptionValues {
@@ -65,6 +67,9 @@ object TemperatureValues {
   }
 
   given Conversion[Float, Temperature] = Temperature(_)
+   implicit val temperatureOrdering: Ordering[Temperature] = (x: Temperature, y: Temperature) =>
+    java.lang.Float.compare(x.toFloat, y.toFloat)
+
 }
 
 import CarbonIntensities._
