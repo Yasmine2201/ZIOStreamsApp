@@ -16,7 +16,12 @@ lazy val root = project
       "dev.zio"              %% "zio"         % zioVersion,
       "dev.zio"              %% "zio-streams" % zioVersion,
       "io.github.iltotore"   %% "iron"        % ironVersion,
-      "com.github.tototoshi" %% "scala-csv"   % scalaCsv,
-      "org.scalatest"        %% "scalatest"   % scalatestVersion % Test
-    )
+      "com.github.tototoshi" %% "scala-csv"   % scalaCsv
+    ),
+    libraryDependencies ++= Seq(
+      "dev.zio"       %% "zio-test"     % zioVersion       % Test,
+      "dev.zio"       %% "zio-test-sbt" % zioVersion       % Test,
+      "org.scalatest" %% "scalatest"    % scalatestVersion % Test
+    ),
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
