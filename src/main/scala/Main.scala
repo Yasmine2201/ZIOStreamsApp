@@ -40,8 +40,14 @@ object Main extends ZIOAppDefault {
       _    <- ZIO.succeed(analysisModule.printPeakOfConsumptionPerYear)
       _    <- printLine("Let's see for Temperatures")
       _    <- ZIO.succeed(analysisModule.printMinOfTemperaturePerYear)
+      _    <- printLine("Let's see if the date of Peak of Cons is close to the one of Min Temp")
+      _    <- ZIO.succeed(analysisModule.printPeakConsAndMinTempPerYear)
+      _    <- printLine(s"what is your deduction $name?")
+      deduction   <- readLine
+      _    <- printLine("Yes you got it! They are very close!!! The same month for most of them! It's logical.\n When it is clod, people use more electricity for heat.")
+      _    <- readLine("Thanks for your interaction, keep going!")
       _    <- printLine("All PeakCons GroupedBy Year ")
-      _    <- ZIO.succeed(analysisModule.printGroupByYear)
+      //_    <- ZIO.succeed(analysisModule.printGroupByYear)
     } yield ()
   }
 }

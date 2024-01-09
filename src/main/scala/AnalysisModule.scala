@@ -28,6 +28,16 @@ def MinOfTempearturePerYear : Map[Int, (Temperature, LocalDate)] ={
     (year, maxTempEntry)
   }
 }
+def PeakConsAndMinTempForYear(yearData: (Int, List[PowerPeakWithTemperature])): (Int, PowerValues.Power, LocalDate, TemperatureValues.Temperature, LocalDate) = {
+  val (year, dataList) = yearData
+
+  val maxPowerEntry = dataList.maxBy(_.power)
+  val minTemperatureEntry = dataList.minBy(_.meanTemperature)
+
+  (year, maxPowerEntry.power, maxPowerEntry.dateTime, minTemperatureEntry.meanTemperature, minTemperatureEntry.dateTime)
+}
+
+  //Prints PowerPeakWithTemperature
 def printPeakOfConsumptionPerYear: Unit = PeakOfConsumPerYear.foreach {
   case (year, (power, day)) =>
     println(s"Year $year: Consumption Peak was: $power on: $day")
@@ -37,7 +47,10 @@ def printMinOfTemperaturePerYear: Unit = MinOfTempearturePerYear.foreach {
   case (year, (temperature, day)) =>
     println(s"Year $year: Tempearture Min was: $temperature on: $day")
 }
-
+def printPeakConsAndMinTempPerYear: Unit = groupedByYear.foreach { yearData =>
+  val (year, maxPower, maxPowerDay, minTemperature, minTemperatureDay) = PeakConsAndMinTempForYear(yearData)
+  println(s"Year $year: Peak Consumption was: $maxPower on: $maxPowerDay, Min Temperature was: $minTemperature on: $minTemperatureDay")
+}
 def printGroupByYear = this.groupedByYear.foreach { case (year, data) =>
   println(s"Year $year:")
   data.foreach(pp =>
