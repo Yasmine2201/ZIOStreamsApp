@@ -37,6 +37,11 @@ object Main extends ZIOAppDefault {
       _    <- printLine("Hello, what is you name?")
       name <- readLine
       _    <- printLine(s"Hello $name, welcome to ZIO! ${analysisModule.getCarbonIntensityPerHour.size}")
+      _    <- ZIO.succeed(analysisModule.printPeakOfConsumptionPerYear)
+      _    <- printLine("Let's see for Temperatures")
+      _    <- ZIO.succeed(analysisModule.printMinOfTemperaturePerYear)
+      _    <- printLine("All PeakCons GroupedBy Year ")
+      _    <- ZIO.succeed(analysisModule.printGroupByYear)
     } yield ()
   }
 }
