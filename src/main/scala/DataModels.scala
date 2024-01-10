@@ -11,9 +11,11 @@ object CarbonIntensities {
 
   object CarbonIntensity {
     def apply(value: Float): CarbonIntensity = value
+    def div (v1: Float, v2:Float): CarbonIntensity = CarbonIntensity(v1/v2)
   }
 
   given Conversion[Float, CarbonIntensity] = CarbonIntensity(_)
+   
 }
 
 object Percentages {
