@@ -81,7 +81,7 @@ object DataLoader {
   }
 
   def loadEcoMix: ZIO[Any, Throwable, zio.Chunk[ElectricityProductionAndConsumption]] = {
-    loadEcoMixFromUrl(getFullPath("eco2mix-regional-tr.csv"))
+    loadEcoMixFromUrl(getFullPath("eco2mix-national-tr.csv"))
   }
 
   def loadEcoMixFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[ElectricityProductionAndConsumption]] = {
