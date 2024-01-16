@@ -16,6 +16,13 @@ import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import java.net.URL
 
+/** Containts loaded data from the app, as chunks
+  *
+  * @param carbonIntensity
+  * @param ecoMix
+  * @param rawConso
+  * @param peakConso
+  */
 final case class ChunkedData(
     carbonIntensity: zio.Chunk[CarbonIntensityPerHour],
     ecoMix: zio.Chunk[ElectricityProductionAndConsumption],
@@ -25,18 +32,40 @@ final case class ChunkedData(
 
 object DataLoader {
 
+  /** CSVFormat that uses ';' as a delimiter
+    */
   private object SemiColonFormat extends DefaultCSVFormat {
     override val delimiter: Char = ';'
   }
 
+  /** Returns the full path of a file in the resources folder
+    *
+    * @param filename
+    *   name of the file
+    * @return
+    */
   private def getFullPath(filename: String): String = {
     getClass.getClassLoader.getResource(filename).getFile()
   }
 
+  /** Loads a CSV file from the resources folder
+    *
+    * @param filename
+    *   name of the file
+    * @param format
+    *   CSVFormat to use
+    * @return
+    *   A CSVReader
+    */
   private def loadCsv(filename: String)(implicit format: CSVFormat): CSVReader = {
     CSVReader.open(filename)(format)
   }
 
+  /** Loads the carbon intensity data from the resources folder
+    *
+    * @return
+    *   a chunk of CarbonIntensityPerHour
+    */
   def loadCarbonIntensity: ZIO[Any, Throwable, zio.Chunk[CarbonIntensityPerHour]] = {
     val url2021 = getFullPath("FR_2021_hourly.csv")
     val url2022 = getFullPath("FR_2022_hourly.csv")
@@ -47,6 +76,13 @@ object DataLoader {
     } yield (merged)
   }
 
+  /** Loads the carbon intensity data from an URL
+    *
+    * @param filename
+    *   name of the file
+    * @return
+    *   a chunk of CarbonIntensityPerHour
+    */
   def loadCarbonIntensityFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[CarbonIntensityPerHour]] = {
     for {
       file <- ZIO.succeed(loadCsv(filename))
@@ -80,10 +116,20 @@ object DataLoader {
     } yield (stream)
   }
 
+  /** Loads the eco mix data from the resources folder. Eco mix data is the production and consumption of electricity, with details on the production by supply chain.
+    *
+    * @return
+    *   a chunk of ElectricityProductionAndConsumption
+    */
   def loadEcoMix: ZIO[Any, Throwable, zio.Chunk[ElectricityProductionAndConsumption]] = {
     loadEcoMixFromUrl(getFullPath("eco2mix-national-tr.csv"))
   }
 
+  /** Loads the eco mix data from an URL. Eco mix data is the production and consumption of electricity, with details on the production by supply chain.
+    *
+    * @param filename
+    * @return
+    */
   def loadEcoMixFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[ElectricityProductionAndConsumption]] = {
     implicit class SupplyChainSeqOperations(val seq: Seq[ElectricityProductionPerSupplyChain]) {
       def maybeAppendToSeq(maybeValue: String, supplyChain: SupplyChain): Seq[ElectricityProductionPerSupplyChain] = {
@@ -128,10 +174,22 @@ object DataLoader {
     } yield (stream)
   }
 
+  /** Loads the raw consumption data from the resources folder
+    *
+    * @return
+    *   a chunk of ElectricityConsumptionPerMonth
+    */
   def loadRawConsos: ZIO[Any, Throwable, zio.Chunk[ElectricityConsumptionPerMonth]] = {
     loadRawConsosFromUrl(getFullPath("conso_brute_corrigee_client_direct.csv"))
   }
 
+  /** Loads the raw consumption data from an URL
+    *
+    * @param filename
+    *   name of the file
+    * @return
+    *   a chunk of ElectricityConsumptionPerMonth
+    */
   def loadRawConsosFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[ElectricityConsumptionPerMonth]] = {
     for {
       file <- ZIO.succeed(loadCsv(filename)(SemiColonFormat))
@@ -163,10 +221,22 @@ object DataLoader {
     } yield (stream)
   }
 
+  /** Loads the peak consumption data and temperature data from the resources folder
+    *
+    * @return
+    *   a chunk of PowerPeakWithTemperature
+    */
   def loadPeakConso: ZIO[Any, Throwable, zio.Chunk[PowerPeakWithTemperature]] = {
     loadPeakConsoFromUrl(getFullPath("pic-journalier-consommation-brute.csv"))
   }
 
+  /** Loads the peak consumption and temperature data from an URL
+    *
+    * @param filename
+    *   name of the file
+    * @return
+    *   a chunk of PowerPeakWithTemperature
+    */
   def loadPeakConsoFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[PowerPeakWithTemperature]] = {
     for {
       file <- ZIO.succeed(loadCsv(filename)(SemiColonFormat))
