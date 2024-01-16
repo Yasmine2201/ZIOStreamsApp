@@ -1,7 +1,6 @@
 import io.github.iltotore.iron.:|
 import io.github.iltotore.iron.constraint.numeric.*
 
-
 import java.time.{LocalDate, LocalDateTime}
 
 import scala.Conversion
@@ -10,12 +9,12 @@ object CarbonIntensities {
   opaque type CarbonIntensity = Float
 
   object CarbonIntensity {
-    def apply(value: Float): CarbonIntensity = value
-    def div (v1: Float, v2:Float): CarbonIntensity = CarbonIntensity(v1/v2)
+    def apply(value: Float): CarbonIntensity       = value
+    def div(v1: Float, v2: Float): CarbonIntensity = CarbonIntensity(v1 / v2)
   }
 
   given Conversion[Float, CarbonIntensity] = CarbonIntensity(_)
-   
+
 }
 
 object Percentages {
@@ -35,7 +34,7 @@ object PowerValues {
     def apply(value: Int): Power = value
   }
 
-  given Conversion[Int, Power] = Power(_)
+  given Conversion[Int, Power]                = Power(_)
   implicit val powerOrdering: Ordering[Power] = Ordering.Int
 }
 
@@ -68,9 +67,8 @@ object TemperatureValues {
     def apply(value: Float): Temperature = value
   }
 
-  given Conversion[Float, Temperature] = Temperature(_)
-   implicit val temperatureOrdering: Ordering[Temperature] = (x: Temperature, y: Temperature) =>
-    java.lang.Float.compare(x.toFloat, y.toFloat)
+  given Conversion[Float, Temperature]                    = Temperature(_)
+  implicit val temperatureOrdering: Ordering[Temperature] = (x: Temperature, y: Temperature) => java.lang.Float.compare(x.toFloat, y.toFloat)
 
 }
 

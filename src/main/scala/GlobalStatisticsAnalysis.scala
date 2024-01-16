@@ -6,7 +6,7 @@ import TemperatureValues.*
 import CarbonIntensities.*
 
 final case class GlobalStatisticsAnalysis(analysisModule: AnalysisModule) {
-  
+
   // PowerPeakWithTemperature Analysis
   def maxPowerPeakByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[PowerPeakWithTemperature]]): Map[Int, (Power, LocalDate)] = {
     powerPeakTemperatureGroupedByYear.map { case (year, dataList) =>
@@ -20,7 +20,7 @@ final case class GlobalStatisticsAnalysis(analysisModule: AnalysisModule) {
       (year, maxTempEntry)
     }
   }
-   // Prints PowerPeakWithTemperature Analysis
+  // Prints PowerPeakWithTemperature Analysis
   def printMaxPowerPeakByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[PowerPeakWithTemperature]]): Unit = maxPowerPeakByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[PowerPeakWithTemperature]]).foreach { case (year, (power, day)) =>
     println(s"Year $year: max Power Peak was: $power MW on: $day")
   }
@@ -29,10 +29,6 @@ final case class GlobalStatisticsAnalysis(analysisModule: AnalysisModule) {
     println(s"Year $year: Tempearture Min was: $temperature°C on: $day")
   }
   // CarbonIntensity Analysis
- 
- 
+
   // CarbonIntensity Prints
 }
-   
-
-
