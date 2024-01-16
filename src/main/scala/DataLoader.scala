@@ -14,6 +14,7 @@ import scala.annotation.static
 
 import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
+import java.net.URL
 
 final case class ChunkedData(
     carbonIntensity: zio.Chunk[CarbonIntensityPerHour],
@@ -28,19 +29,30 @@ object DataLoader {
     override val delimiter: Char = ';'
   }
 
+  private def getFullPath(filename: String): String = {
+    getClass.getClassLoader.getResource(filename).getFile()
+  }
+
   private def loadCsv(filename: String)(implicit format: CSVFormat): CSVReader = {
-    val url = getClass.getClassLoader.getResource(filename)
-    CSVReader.open(url.getFile)(format)
+    CSVReader.open(filename)(format)
   }
 
   def loadCarbonIntensity: ZIO[Any, Throwable, zio.Chunk[CarbonIntensityPerHour]] = {
+    val url2021 = getFullPath("FR_2021_hourly.csv")
+    val url2022 = getFullPath("FR_2022_hourly.csv")
     for {
-      file_2021 <- ZIO.succeed(loadCsv("FR_2021_hourly.csv"))
-      file_2022 <- ZIO.succeed(loadCsv("FR_2022_hourly.csv"))
+      chunk2021 <- loadCarbonIntensityFromUrl(url2021)
+      chunk2022 <- loadCarbonIntensityFromUrl(url2022)
+      merged    <- ZStream.fromChunks(chunk2021, chunk2022).runCollect
+    } yield (merged)
+  }
+
+  def loadCarbonIntensityFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[CarbonIntensityPerHour]] = {
+    for {
+      file <- ZIO.succeed(loadCsv(filename))
       stream <- ZStream
-        .fromIterator[Seq[String]](file_2021.iterator)
+        .fromIterator[Seq[String]](file.iterator)
         .drop(1)
-        .merge(ZStream.fromIterator[Seq[String]](file_2022.iterator).drop(1))
         .map[Option[CarbonIntensityPerHour]](line =>
           val dateTime         = Try(LocalDateTime.parse(line.head, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).toOption
           val directIntensity  = line(4).toFloatOption
@@ -64,12 +76,15 @@ object DataLoader {
         )
         .collectSome[CarbonIntensityPerHour]
         .runCollect
-      _ <- ZIO.succeed(file_2021.close())
-      _ <- ZIO.succeed(file_2022.close())
+      _ <- ZIO.succeed(file.close())
     } yield (stream)
   }
 
   def loadEcoMix: ZIO[Any, Throwable, zio.Chunk[ElectricityProductionAndConsumption]] = {
+    loadEcoMixFromUrl(getFullPath("eco2mix-national-tr.csv"))
+  }
+
+  def loadEcoMixFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[ElectricityProductionAndConsumption]] = {
     implicit class SupplyChainSeqOperations(val seq: Seq[ElectricityProductionPerSupplyChain]) {
       def maybeAppendToSeq(maybeValue: String, supplyChain: SupplyChain): Seq[ElectricityProductionPerSupplyChain] = {
         maybeValue.toIntOption match {
@@ -80,7 +95,7 @@ object DataLoader {
     }
 
     for {
-      file <- ZIO.succeed(loadCsv("eco2mix-national-tr.csv")(SemiColonFormat))
+      file <- ZIO.succeed(loadCsv(filename)(SemiColonFormat))
       stream <- ZStream
         .fromIterator[Seq[String]](file.iterator)
         .drop(1)
@@ -114,8 +129,12 @@ object DataLoader {
   }
 
   def loadRawConsos: ZIO[Any, Throwable, zio.Chunk[ElectricityConsumptionPerMonth]] = {
+    loadRawConsosFromUrl(getFullPath("conso_brute_corrigee_client_direct.csv"))
+  }
+
+  def loadRawConsosFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[ElectricityConsumptionPerMonth]] = {
     for {
-      file <- ZIO.succeed(loadCsv("conso_brute_corrigee_client_direct.csv")(SemiColonFormat))
+      file <- ZIO.succeed(loadCsv(filename)(SemiColonFormat))
       stream <- ZStream
         .fromIterator[Seq[String]](file.iterator)
         .drop(1)
@@ -145,8 +164,12 @@ object DataLoader {
   }
 
   def loadPeakConso: ZIO[Any, Throwable, zio.Chunk[PowerPeakWithTemperature]] = {
+    loadPeakConsoFromUrl(getFullPath("pic-journalier-consommation-brute.csv"))
+  }
+
+  def loadPeakConsoFromUrl(filename: String): ZIO[Any, Throwable, zio.Chunk[PowerPeakWithTemperature]] = {
     for {
-      file <- ZIO.succeed(loadCsv("pic-journalier-consommation-brute.csv")(SemiColonFormat))
+      file <- ZIO.succeed(loadCsv(filename)(SemiColonFormat))
       stream <- ZStream
         .fromIterator[Seq[String]](file.iterator)
         .drop(1)
