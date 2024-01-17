@@ -36,11 +36,11 @@ object Main extends ZIOAppDefault {
       // Create GlobalStatisticsAnalysis
       globalStatisticsAnalysis = GlobalStatisticsAnalysis(analysisModule)
       // Create PowerTemperatureAnalysis
-      powerTemperatureAnalysis = PowerTemperatureAnalysis(analysisModule.getPowerPeakWithTemperature)
+      powerTemperatureAnalysis = PowerTemperatureAnalysis(analysisModule.dailyPowerPeakWithTemperature)
 
       _         <- printLine("Hello, what is you name?")
       name      <- readLine
-      _         <- printLine(s"Hello $name, welcome to ZIO! ${analysisModule.getCarbonIntensityPerHour.size}")
+      _         <- printLine(s"Hello $name, welcome to ZIO! ${analysisModule.hourlyCarbonIntensity.size}")
       _         <- printLine("Let's see what is the maximum power peak reached for each year :\n")
       _         <- ZIO.succeed(globalStatisticsAnalysis.printMaxPowerPeakByYear(analysisModule.powerPeakTemperatureGroupedByYear))
       _         <- printLine("\n")

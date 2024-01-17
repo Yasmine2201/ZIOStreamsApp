@@ -1,3 +1,3 @@
 import zio.Chunk
 
-final case class CarbonIntensityAnalysis(CarbonIntensityPerHour: Chunk[CarbonIntensityPerHour]) {}
+final case class CarbonIntensityAnalysis(HourlyCarbonIntensity: Chunk[HourlyCarbonIntensity]) {}
