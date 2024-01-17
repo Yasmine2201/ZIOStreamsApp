@@ -1,23 +1,22 @@
-import PowerValues.*
+import Types.*
 import java.time.LocalDate
-import TemperatureValues.*
 import zio.Chunk
 
-final case class PowerTemperatureAnalysis(powerPeakWithTemperature: Chunk[PowerPeakWithTemperature]) {
-  
-  def maxPowerPeakAndMinTemperatureByYear(yearData: (Int, List[PowerPeakWithTemperature])): (Int, PowerValues.Power, LocalDate, TemperatureValues.Temperature, LocalDate) = {
+final case class PowerTemperatureAnalysis(dailyPowerPeakWithTemperature: Chunk[DailyPowerPeakWithTemperature]) {
+
+  def maxPowerPeakAndMinTemperatureByYear(yearData: (Int, List[DailyPowerPeakWithTemperature])): (Int, DailyPowerPeakWithTemperature, DailyPowerPeakWithTemperature) = {
     val (year, dataList) = yearData
 
-    val maxPowerEntry       = dataList.maxBy(_.power)
+    val maxPowerEntry       = dataList.maxBy(_.powerPeak)
     val minTemperatureEntry = dataList.minBy(_.meanTemperature)
 
-    (year, maxPowerEntry.power, maxPowerEntry.dateTime, minTemperatureEntry.meanTemperature, minTemperatureEntry.dateTime)
+    (year, maxPowerEntry, minTemperatureEntry)
   }
 
- 
-  def printMaxPowerPeakAndMinTemperatureByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[PowerPeakWithTemperature]]): Unit = powerPeakTemperatureGroupedByYear.foreach { yearData =>
-    val (year, maxPower, maxPowerDay, minTemperature, minTemperatureDay) = maxPowerPeakAndMinTemperatureByYear(yearData)
-    println(s"Year $year: Max Power Peak was on: $maxPowerDay, Min Temperature was on: $minTemperatureDay")
+  def printMaxPowerPeakAndMinTemperatureByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[DailyPowerPeakWithTemperature]]): Unit = {
+    powerPeakTemperatureGroupedByYear.foreach { yearData =>
+      val (year, maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperatureByYear(yearData)
+      println(s"Year $year: Max Power Peak was on: ${maxPowerEntry.date}, Min Temperature was on: ${minTemperatureEntry.date}")
+    }
   }
- 
 }
