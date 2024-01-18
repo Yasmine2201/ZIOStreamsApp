@@ -23,12 +23,15 @@ final case class GlobalStatisticsAnalysis(analysisModule: AnalysisModule) {
       (year, maxTempEntry)
     }
   }
-  // Prints DailyPowerPeakWithTemperature Analysis
-  def printMaxPowerPeakByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[DailyPowerPeakWithTemperature]]): Unit = maxPowerPeakByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[DailyPowerPeakWithTemperature]]).foreach { case (year, (power, day)) =>
-    println(s"Year $year: max Power Peak was: $power MW on: $day")
-  }
 
-  def printMinTempeartureByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[DailyPowerPeakWithTemperature]]): Unit = minTempeartureByYear(powerPeakTemperatureGroupedByYear: Map[Int, List[DailyPowerPeakWithTemperature]]).foreach { case (year, (temperature, day)) =>
-    println(s"Year $year: Tempearture Min was: $temperature°C on: $day")
-  }
+  // Prints DailyPowerPeakWithTemperature Analysis
+  def printMaxPowerPeakByYear: Unit =
+    maxPowerPeakByYear(analysisModule.powerPeakTemperatureGroupedByYear).foreach { case (year, (power, day)) =>
+      println(s"Year $year: max Power Peak was: $power MW on: $day")
+    }
+
+  def printMinTempeartureByYear: Unit =
+    minTempeartureByYear(analysisModule.powerPeakTemperatureGroupedByYear).foreach { case (year, (temperature, day)) =>
+      println(s"Year $year: Tempearture Min was: $temperature°C on: $day")
+    }
 }
