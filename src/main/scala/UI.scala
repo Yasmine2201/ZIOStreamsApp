@@ -4,8 +4,14 @@ import java.time.LocalDate
 import scala.util.Try
 import java.time.format.DateTimeFormatter
 
+/** Object containing all the UI logic
+  */
 object UI {
 
+  /** Menu options with their associated actions to perform
+    * @return
+    *   a chunk of tuples (name, action), action being a function that takes LoadedData and returns a ZIO effect that will return Unit
+    */
   val menuOptions: Chunk[(String, (LoadedData) => ZIO[Any, Any, Unit])] = Chunk(
     "Get stats for a specific day" -> ((data) =>
       for {
@@ -29,6 +35,8 @@ object UI {
       + "\n\nPlease enter your choice: "
 
   /** Main ZIO console loop
+    * @return
+    *   a ZIO effect that will return Unit
     */
   def consoleLoop(data: LoadedData): ZIO[Any, Any, Unit] = {
     for {
@@ -42,6 +50,10 @@ object UI {
     } yield ()
   }
 
+  /** Reads a date from the console
+    * @return
+    *   a ZIO effect that will return a LocalDate
+    */
   def readDate: ZIO[Any, Any, LocalDate] =
     for {
       input <- readLine
