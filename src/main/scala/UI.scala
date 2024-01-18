@@ -20,7 +20,15 @@ object UI {
         _    <- printLine(s"Stats for $date:")
       } yield ()
     ),
-    "Global statistics for a given period"       -> ((data) => printLine("Not implemented yet")),
+    "Global statistics for a given period" -> ((data) =>
+      for {
+        _         <- printLine("Please enter a start date (dd/MM/yyyy): ")
+        startDate <- readDate
+        _         <- printLine("Please enter an end date (dd/MM/yyyy): ")
+        endDate   <- readDate
+        _         <- printLine(s"Stats for $startDate to $endDate:")
+      } yield ()
+    ),
     "Case study: Temperature vs power peak"      -> ((data) => printLine("Not implemented yet")),
     "Case study: Carbon intensity vs power peak" -> ((data) => printLine("Not implemented yet"))
   )
