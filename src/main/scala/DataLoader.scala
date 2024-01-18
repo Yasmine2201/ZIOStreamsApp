@@ -264,7 +264,7 @@ object DataLoader {
   /** Loads all the data into a LoadedData object
     *
     * @return
-    *   a LoadedData object
+    *   a ZIO effect that will return a LoadedData object
     */
   def loadData: ZIO[Any, Throwable, LoadedData] = {
     for {
