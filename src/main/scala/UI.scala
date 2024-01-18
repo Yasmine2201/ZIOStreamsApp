@@ -3,6 +3,7 @@ import zio.Console._
 import java.time.LocalDate
 import scala.util.Try
 import java.time.format.DateTimeFormatter
+import PowerTemperatureAnalysis._
 
 /** Object containing all the UI logic
   */
@@ -29,9 +30,29 @@ object UI {
         _         <- printLine(s"Stats for $startDate to $endDate:")
       } yield ()
     ),
-    "Case study: Temperature vs power peak"      -> ((data) => printLine("Not implemented yet")),
+    "Case study: Temperature vs power peak"      -> ((data) => printLine(printMaxPowerPeakAndMinTemperatureByYear(data))),
     "Case study: Carbon intensity vs power peak" -> ((data) => printLine("Not implemented yet"))
   )
+  
+
+def printMaxPowerPeakAndMinTemperatureByYear(data: LoadedData): String = {
+    val res=""
+    powerPeakTemperatureGroupedByYear(data).foreach { yearData =>
+      val (year, maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperatureByYear(yearData)
+      res.concat(s"Year $year: Max Power Peak was on: ${maxPowerEntry.date}, Min Temperature was on: ${minTemperatureEntry.date}")
+    }
+    res
+    
+  }
+
+def printMaxPowerPeakAndMinTemperatureByYear(data: LoadedData): String = {
+  powerPeakTemperatureGroupedByYear(data)
+    .flatMap { case (year, yearData) =>
+      val (maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperatureByYear(yearData)
+      Some(s"Year $year: Max Power Peak was on: ${maxPowerEntry.date}, Min Temperature was on: ${minTemperatureEntry.date}")
+    }
+    .mkString("\n")
+}
 
   val choiceMenu: String =
     "Welcome to our energy analysis tool!\n\nHere are all the interesting interactions you can have with it:\n"
