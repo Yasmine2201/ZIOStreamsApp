@@ -38,10 +38,10 @@ object Main extends ZIOAppDefault {
       name      <- readLine
       _         <- printLine(s"Hello $name, welcome to ZIO! ${analysisModule.hourlyCarbonIntensity.size}")
       _         <- printLine("Let's see what is the maximum power peak reached for each year :\n")
-      _         <- ZIO.succeed(analysisModule.globalStatisticsAnalysis.printMaxPowerPeakByYear)
+      _         <- ZIO.succeed(analysisModule.powerTemperatureAnalysis.printMaxPowerPeakByYear)
       _         <- printLine("\n")
       _         <- printLine("Let's see what is the minimum temperature reached for each year :\n")
-      _         <- ZIO.succeed(analysisModule.globalStatisticsAnalysis.printMinTempeartureByYear)
+      _         <- ZIO.succeed(analysisModule.powerTemperatureAnalysis.printMinTempeartureByYear)
       _         <- printLine("\n")
       _         <- printLine("Let's display them together to see if the date of maximum power peak is close to the one of minimum temperature :")
       _         <- printLine("\n")
