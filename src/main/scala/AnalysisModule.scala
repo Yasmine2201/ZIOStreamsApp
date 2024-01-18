@@ -1,6 +1,10 @@
 import zio.Chunk
 import java.time.LocalDate
 
+/** Acts as a data container for all the data we need to perform our analysis
+  * @param data
+  *   The data coming from the dataloader
+  */
 final case class AnalysisModule(data: ChunkedData) {
 
   // Global Analysis Data (parsed from the dataloader)
