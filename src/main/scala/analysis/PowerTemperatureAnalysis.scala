@@ -22,14 +22,8 @@ object PowerTemperatureAnalysis {
     data.dailyPowerPeakWithTemperature.toList.groupBy(pp => pp.date.getYear)
   }
 
-  def maxPowerPeakAndMinTemperatureByYear(yearData: (Int, List[DailyPowerPeakWithTemperature])): (Int, DailyPowerPeakWithTemperature, DailyPowerPeakWithTemperature) = {
-    val (year, dataList) = yearData
-
-    val maxPowerEntry       = dataList.maxBy(_.powerPeak)
-    val minTemperatureEntry = dataList.minBy(_.meanTemperature)
-
-    (year, maxPowerEntry, minTemperatureEntry)
-  }
+  def maxPowerPeakAndMinTemperature(yearData: List[DailyPowerPeakWithTemperature]): (DailyPowerPeakWithTemperature, DailyPowerPeakWithTemperature) =
+    (yearData.maxBy(_.powerPeak), yearData.minBy(_.meanTemperature))
 
   // Prints DailyPowerPeakWithTemperature Analysis
   def printMaxPowerPeakByYear(data: LoadedData): Unit =
@@ -42,10 +36,10 @@ object PowerTemperatureAnalysis {
       println(s"Year $year: Tempearture Min was: $temperature°C on: $day")
     }
 
-  def printMaxPowerPeakAndMinTemperatureByYear(data: LoadedData): Unit = {
-    powerPeakTemperatureGroupedByYear(data).foreach { yearData =>
-      val (year, maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperatureByYear(yearData)
-      println(s"Year $year: Max Power Peak was on: ${maxPowerEntry.date}, Min Temperature was on: ${minTemperatureEntry.date}")
-    }
-  }
+  // def printMaxPowerPeakAndMinTemperatureByYear(data: LoadedData): Unit = {
+  //   powerPeakTemperatureGroupedByYear(data).foreach { yearData =>
+  //     val (year, maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperatureByYear(yearData)
+  //     println(s"Year $year: Max Power Peak was on: ${maxPowerEntry.date}, Min Temperature was on: ${minTemperatureEntry.date}")
+  //   }
+  // }
 }
