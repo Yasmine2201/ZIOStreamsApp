@@ -34,7 +34,7 @@ object UI {
   )
 
   val choiceMenu: String =
-    "\nWelcome to our energy analysis tool!\n\nHere are all the interesting interactions you can have with it:\n"
+    "Welcome to our energy analysis tool!\n\nHere are all the interesting interactions you can have with it:\n"
       + menuOptions.zipWithIndex
         .map { case ((name, _), index) =>
           s"${index + 1}. $name"

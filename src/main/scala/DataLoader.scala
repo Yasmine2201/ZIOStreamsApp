@@ -260,4 +260,23 @@ object DataLoader {
       _ <- ZIO.succeed(file.close())
     } yield (stream)
   }
+
+  /** Loads all the data into a LoadedData object
+    *
+    * @return
+    *   a LoadedData object
+    */
+  def loadData: ZIO[Any, Throwable, LoadedData] = {
+    for {
+      hourlyCarbonIntensity                     <- loadCarbonIntensity
+      hourlyElectricityProductionAndConsumption <- loadEcoMix
+      monthlyElectricityConsumption             <- loadRawConsos
+      dailyPowerPeakWithTemperature             <- loadPeakConso
+    } yield LoadedData(
+      hourlyCarbonIntensity,
+      hourlyElectricityProductionAndConsumption,
+      monthlyElectricityConsumption,
+      dailyPowerPeakWithTemperature
+    )
+  }
 }
