@@ -49,6 +49,37 @@ object ChunkMath {
   def standardDeviation[A](chunk: Chunk[A])(using F: Fractional[A]): Double =
     math.sqrt(F.toDouble(variance(chunk)))
 
+  /** Calculates the linear correlation coefficient of two chunks of data using the Pearson correlation coefficient. The two chunks must be of the same size.
+    *
+    * @param chunkX
+    *   the first chunk of data
+    * @param chunkY
+    *   the second chunk of data
+    * @param F
+    *   the fractional type class
+    * @return
+    *   the linear correlation coefficient of the two chunks of data
+    */
+  def linearCorrelationCoefficient[A](chunkX: Chunk[A], chunkY: Chunk[A])(using F: Fractional[A]): Double = {
+    assert(chunkX.size == chunkY.size)
+
+    val n = F.fromInt(chunkX.size)
+    val sumOfProducts = chunkX
+      .zip(chunkY)
+      .map { case (x, y) =>
+        x * y
+      }
+      .sum
+
+    val xAverage = average(chunkX);
+    val yAverage = average(chunkY);
+
+    val numerator   = (sumOfProducts - (n * xAverage * yAverage)).toDouble
+    val denominator = n.toDouble * standardDeviation(chunkX) * standardDeviation(chunkY)
+
+    if (denominator != 0) numerator / denominator else 0
+  }
+
   extension [A](chunk: Chunk[A]) {
 
     /** Calculates the average of a the values returned by a function applied to each element of the chunk.
