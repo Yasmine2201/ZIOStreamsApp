@@ -16,7 +16,7 @@ object DataLoaderSpec extends ZIOSpecDefault {
       for (result <- DataLoader.loadCarbonIntensityFromUrl(getTestPath("carbon-intensity.csv")))
         yield assert(result)(isSubtype[Chunk[HourlyCarbonIntensity]](anything))
     },
-    test("loadCarbonIntensityFromUrl should load rigth number of entries") {
+    test("loadCarbonIntensityFromUrl should load right number of entries") {
       for (result <- DataLoader.loadCarbonIntensityFromUrl(getTestPath("FR_2021_hourly.csv")))
         yield assert(result.size)(equalTo(8760))
     },
@@ -28,7 +28,7 @@ object DataLoaderSpec extends ZIOSpecDefault {
       for (result <- DataLoader.loadEcoMixFromUrl(getTestPath("ecomix.csv")))
         yield assert(result)(isSubtype[Chunk[HourlyElectricityProductionAndConsumption]](anything))
     },
-    test("loadEcoMixFromUrl should load rigth number of entries") {
+    test("loadEcoMixFromUrl should load right number of entries") {
       for (result <- DataLoader.loadEcoMixFromUrl(getTestPath("ecomix.csv")))
         yield assert(result.size)(equalTo(10))
     },
@@ -40,7 +40,7 @@ object DataLoaderSpec extends ZIOSpecDefault {
       for (result <- DataLoader.loadRawConsosFromUrl(getTestPath("conso-brute.csv")))
         yield assert(result)(isSubtype[Chunk[MonthlyElectricityConsumption]](anything))
     },
-    test("loadRawConsosFromUrl should load rigth number of entries") {
+    test("loadRawConsosFromUrl should load right number of entries") {
       for (result <- DataLoader.loadRawConsosFromUrl(getTestPath("conso-brute.csv")))
         yield assert(result.size)(equalTo(10))
     },
@@ -52,7 +52,7 @@ object DataLoaderSpec extends ZIOSpecDefault {
       for (result <- DataLoader.loadPeakConsoFromUrl(getTestPath("pic-conso.csv")))
         yield assert(result)(isSubtype[Chunk[DailyPowerPeakWithTemperature]](anything))
     },
-    test("loadPeakConsoFromUrl should load rigth number of entries") {
+    test("loadPeakConsoFromUrl should load right number of entries") {
       for (result <- DataLoader.loadPeakConsoFromUrl(getTestPath("pic-conso.csv")))
         yield assert(result.size)(equalTo(18))
     }
