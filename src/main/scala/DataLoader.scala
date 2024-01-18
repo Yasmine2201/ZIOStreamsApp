@@ -4,6 +4,7 @@ import com.github.tototoshi.csv.{CSVReader, CSVFormat, DefaultCSVFormat, default
 
 import zio.ZIO
 import zio.stream.ZStream
+import zio.Chunk
 
 import scala.util.Try
 import scala.annotation.static
@@ -12,18 +13,15 @@ import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import java.net.URL
 
-/** Containts loaded data from the app, as chunks
-  *
-  * @param carbonIntensity
-  * @param ecoMix
-  * @param rawConso
-  * @param peakConso
+/** Acts as a data container for all the data we need to perform our analysis
+  * @param data
+  *   The data coming from the dataloader
   */
-final case class ChunkedData(
-    carbonIntensity: zio.Chunk[HourlyCarbonIntensity],
-    ecoMix: zio.Chunk[HourlyElectricityProductionAndConsumption],
-    rawConso: zio.Chunk[MonthlyElectricityConsumption],
-    peakConso: zio.Chunk[DailyPowerPeakWithTemperature]
+final case class LoadedData(
+    hourlyCarbonIntensity: Chunk[HourlyCarbonIntensity],
+    hourlyElectricityProductionAndConsumption: Chunk[HourlyElectricityProductionAndConsumption],
+    monthlyElectricityConsumption: Chunk[MonthlyElectricityConsumption],
+    dailyPowerPeakWithTemperature: Chunk[DailyPowerPeakWithTemperature]
 )
 
 object DataLoader {

@@ -12,31 +12,28 @@ object Main extends ZIOAppDefault {
       _ <- printLine("Loading data...")
 
       // Load data
-
-      carbonIntensity <- loadCarbonIntensity
-      ecoMix          <- loadEcoMix
-      rawConso        <- loadRawConsos
-      peakConso       <- loadPeakConso
+      data <- for {
+        carbonIntensity <- loadCarbonIntensity
+        ecoMix          <- loadEcoMix
+        rawConso        <- loadRawConsos
+        peakConso       <- loadPeakConso
+      } yield LoadedData(
+        carbonIntensity,
+        ecoMix,
+        rawConso,
+        peakConso
+      )
 
       // Print size of chunks
-
-      _ <- printLine(s"Carbon intensity entries: ${carbonIntensity.size}")
-      _ <- printLine(s"Eco mix entries: ${ecoMix.size}")
-      _ <- printLine(s"Raw conso entries: ${rawConso.size}")
-      _ <- printLine(s"Peak conso entries: ${peakConso.size}")
-
-      // Create analysis module
-      analysisModule = AnalysisModule(
-        ChunkedData(
-          carbonIntensity,
-          ecoMix,
-          rawConso,
-          peakConso
-        )
+      _ <- printLine(
+        s"Carbon intensity entries: ${data.hourlyCarbonIntensity.size}\n" +
+          s"Eco mix entries: ${data.hourlyElectricityProductionAndConsumption.size}\n" +
+          s"Raw conso entries: ${data.monthlyElectricityConsumption.size}\n" +
+          s"Peak conso entries: ${data.dailyPowerPeakWithTemperature.size}"
       )
 
       // Run UI
-      _ <- consoleLoop(analysisModule)
+      _ <- consoleLoop(data)
     } yield ()
   }
 }

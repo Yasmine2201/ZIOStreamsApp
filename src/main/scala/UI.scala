@@ -6,16 +6,17 @@ import java.time.format.DateTimeFormatter
 
 object UI {
 
-  val menuOptions: Chunk[(String, (AnalysisModule) => ZIO[Any, Any, Unit])] = Chunk(
-    "Get stats for a specific day" -> ((mod) =>
+  val menuOptions: Chunk[(String, (LoadedData) => ZIO[Any, Any, Unit])] = Chunk(
+    "Get stats for a specific day" -> ((data) =>
       for {
-        date <- askForDate
+        _    <- printLine("Please enter a date (dd/MM/yyyy): ")
+        date <- readDate
         _    <- printLine(s"Stats for $date:")
       } yield ()
     ),
-    "Global statistics for a given period"       -> ((mod) => ZIO.succeed(mod.carbonIntensityAnalysis.printCarbonIntensityGroupedByDay)),
-    "Case study: Temperature vs power peak"      -> ((mod) => ZIO.succeed(mod.powerTemperatureAnalysis.printMaxPowerPeakAndMinTemperatureByYear)),
-    "Case study: Carbon intensity vs power peak" -> ((mod) => ZIO.succeed(mod.powerTemperatureAnalysis.printMaxPowerPeakByYear))
+    "Global statistics for a given period"       -> ((data) => printLine("Not implemented yet")),
+    "Case study: Temperature vs power peak"      -> ((data) => printLine("Not implemented yet")),
+    "Case study: Carbon intensity vs power peak" -> ((data) => printLine("Not implemented yet"))
   )
 
   val choiceMenu: String =
@@ -29,25 +30,24 @@ object UI {
 
   /** Main ZIO console loop
     */
-  def consoleLoop(analysisModule: AnalysisModule): ZIO[Any, Any, Unit] = {
+  def consoleLoop(data: LoadedData): ZIO[Any, Any, Unit] = {
     for {
       _     <- printLine(choiceMenu)
       input <- readLine
       _ <- menuOptions.lift(input.toInt - 1) match {
-        case Some((_, action)) => action(analysisModule)
+        case Some((_, action)) => action(data)
         case None              => printLineError("Invalid choice")
       }
-      _ <- consoleLoop(analysisModule)
+      _ <- consoleLoop(data)
     } yield ()
   }
 
-  def askForDate: ZIO[Any, Any, LocalDate] =
+  def readDate: ZIO[Any, Any, LocalDate] =
     for {
-      _     <- printLine("Please enter a date (dd/MM/yyyy): ")
       input <- readLine
       date <- Try(LocalDate.parse(input, DateTimeFormatter.ofPattern("dd/MM/yyyy"))).toOption match {
         case Some(date) => ZIO.succeed(date)
-        case None       => printLineError("You entered an invalid date, retry.\n") *> askForDate
+        case None       => printLineError("You entered an invalid date, retry.\n") *> readDate
       }
     } yield date
 }
