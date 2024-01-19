@@ -54,20 +54,20 @@ object DataLoader {
     */
   def loadCarbonIntensity: ZIO[Any, Throwable, zio.Chunk[HourlyCarbonIntensity]] = {
     for {
-      chunk2021 <- loadCarbonIntensityFromUrl("FR_2021_hourly.csv")
-      chunk2022 <- loadCarbonIntensityFromUrl("FR_2022_hourly.csv")
+      chunk2021 <- loadCarbonIntensityFromFileName("FR_2021_hourly.csv")
+      chunk2022 <- loadCarbonIntensityFromFileName("FR_2022_hourly.csv")
       merged    <- ZStream.fromChunks(chunk2021, chunk2022).runCollect
     } yield (merged)
   }
 
-  /** Loads the carbon intensity data from an URL
+  /** Loads the carbon intensity data from a file name of a file in the jar resources
     *
     * @param filename
     *   name of the file
     * @return
     *   a chunk of HourlyCarbonIntensity
     */
-  def loadCarbonIntensityFromUrl(fileName: String): ZIO[Any, Throwable, zio.Chunk[HourlyCarbonIntensity]] = {
+  def loadCarbonIntensityFromFileName(fileName: String): ZIO[Any, Throwable, zio.Chunk[HourlyCarbonIntensity]] = {
     for {
       file <- ZIO.succeed(loadCsv(fileName))
       stream <- ZStream
@@ -109,7 +109,7 @@ object DataLoader {
     loadEcoMixFromFileName("eco2mix-national-tr.csv")
   }
 
-  /** Loads the eco mix data from an URL.
+  /** Loads the eco mix data from a file name of a file in the jar resources
     *
     * @param filename
     * @return
@@ -167,7 +167,7 @@ object DataLoader {
     loadRawConsosFromFileName("conso_brute_corrigee_client_direct.csv")
   }
 
-  /** Loads the raw consumption data from an URL
+  /** Loads the raw consumption data from a file name of a file in the jar resources
     *
     * @param filename
     *   name of the file
@@ -214,7 +214,7 @@ object DataLoader {
     loadPeakConsoFromFileName("pic-journalier-consommation-brute.csv")
   }
 
-  /** Loads the peak consumption and temperature data from an URL
+  /** Loads the peak consumption and temperature data from a file name of a file in the jar resources
     *
     * @param filename
     *   name of the file

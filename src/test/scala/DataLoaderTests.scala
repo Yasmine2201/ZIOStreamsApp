@@ -9,11 +9,11 @@ object DataLoaderSpec extends ZIOSpecDefault {
         yield assert(result)(isSubtype[Chunk[HourlyCarbonIntensity]](anything))
     },
     test("loadCarbonIntensityFromUrl should load carbon intensity per hour data") {
-      for (result <- DataLoader.loadCarbonIntensityFromUrl("carbon-intensity.csv"))
+      for (result <- DataLoader.loadCarbonIntensityFromFileName("carbon-intensity.csv"))
         yield assert(result)(isSubtype[Chunk[HourlyCarbonIntensity]](anything))
     },
     test("loadCarbonIntensityFromUrl should load right number of entries") {
-      for (result <- DataLoader.loadCarbonIntensityFromUrl("FR_2021_hourly.csv"))
+      for (result <- DataLoader.loadCarbonIntensityFromFileName("FR_2021_hourly.csv"))
         yield assert(result.size)(equalTo(8760))
     },
     test("loadEcoMix should load eco mix data") {
