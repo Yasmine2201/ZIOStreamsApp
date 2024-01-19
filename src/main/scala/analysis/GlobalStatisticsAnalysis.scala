@@ -62,7 +62,7 @@ object GlobalStatisticsAnalysis {
         val count     = values.size
 
         Statistics(fieldName, average, stdDev, min, max, count)
-    }.toList
+      }.toList
   }
 
   /** Get a formatted table of statistics.
@@ -215,4 +215,58 @@ object GlobalStatisticsAnalysis {
       end
     )
   }
+
+  /** Get a formatted table of statistics about the carbon intensity of electricity production and consumption, given a period of time.
+    *
+    * @param data
+    *   The data to analyse.
+    * @param startDate
+    *   The start date of the period.
+    * @param endDate
+    *   The end date of the period.
+    * @return
+    *   A formatted table
+    */
+  def carbonIntensityTab(data: LoadedData, startDate: LocalDate, endDate: LocalDate): String =
+    GlobalStatisticsAnalysis.formatStatisticsTable(
+      "Environmental impact of electricity production and consumption",
+      GlobalStatisticsAnalysis.getCarbonIntensityStatistics(data, startDate, endDate),
+      s"Data between $startDate and $endDate"
+    )
+
+    /** Get a formatted table of statistics about the temperature and power consumption, given a period of time.
+      *
+      * @param data
+      *   The data to analyse.
+      * @param startDate
+      *   The start date of the period.
+      * @param endDate
+      *   The end date of the period.
+      * @return
+      *   A formatted table
+      */
+  def consumptionAndTemperatureTab(data: LoadedData, startDate: LocalDate, endDate: LocalDate): String =
+    GlobalStatisticsAnalysis.formatStatisticsTable(
+      "Electricty consumption and temperature",
+      GlobalStatisticsAnalysis.getTemperatureAndConsumptionStatistics(data, startDate, endDate),
+      s"Data between $startDate and $endDate"
+    )
+
+    /** Get a formatted table of statistics about the production by supply chain, given a period of time.
+      *
+      * @param data
+      *   The data to analyse.
+      * @param startDate
+      *   The start date of the period.
+      * @param endDate
+      *   The end date of the period.
+      * @return
+      *   A formatted table
+      */
+  def productionBySupplyChainTab(data: LoadedData, startDate: LocalDate, endDate: LocalDate): String =
+    GlobalStatisticsAnalysis.formatStatisticsTable(
+      "Production (MW) by supply chain",
+      GlobalStatisticsAnalysis.getProductionBySupplyChain(data, startDate, endDate),
+      s"Data between $startDate and $endDate"
+    )
 }
