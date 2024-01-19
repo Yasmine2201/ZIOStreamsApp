@@ -1,5 +1,3 @@
-providing use case presentation, a functional schema, instructions on how to run and test your application and the decisions made (libraries, data structure(s), algorithm, performance, ...).
-
 # Energy Analysis Tool
 
 ## How to run & test

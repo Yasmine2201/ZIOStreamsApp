@@ -48,38 +48,6 @@ object Types {
     implicit val GWOrdering: Ordering[GW] = (x: GW, y: GW) => x.toFloat compare y.toFloat
   }
 
-  object Consumption {
-    type kWh = Float
-    type MWh = Float
-    type GWh = Float
-
-    object kWh {
-      def apply(value: Float): kWh = value
-      def toMWh(value: kWh): MWh   = value / 1000
-      def toGWh(value: kWh): GWh   = value / 1000000
-    }
-
-    object MWh {
-      def apply(value: Float): MWh = value
-      def tokWh(value: MWh): kWh   = value * 1000
-      def toGWh(value: MWh): GWh   = value / 1000
-    }
-
-    object GWh {
-      def apply(value: Float): GWh = value
-      def tokWh(value: GWh): kWh   = value * 1000000
-      def toMWh(value: GWh): MWh   = value * 1000
-    }
-
-    given Conversion[Float, kWh] = kWh(_)
-    given Conversion[Float, MWh] = MWh(_)
-    given Conversion[Float, GWh] = GWh(_)
-
-    implicit val kWhOrdering: Ordering[kWh] = (x: kWh, y: kWh) => x.toFloat compare y.toFloat
-    implicit val MWhOrdering: Ordering[MWh] = (x: MWh, y: MWh) => x.toFloat compare y.toFloat
-    implicit val GWhOrdering: Ordering[GWh] = (x: GWh, y: GWh) => x.toFloat compare y.toFloat
-  }
-
   object Temperature {
     type Celsius = Float
 
