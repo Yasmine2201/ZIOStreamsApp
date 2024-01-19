@@ -99,6 +99,10 @@ The project is structured as follows:
   - `formatters` contains the different functions used to format the data into tables, which are then printed to the console.
   - `analysis` contains the different functions used to analyze the data, with functions useful for the case study (application of the Pearson correlation coefficient) and also for the different statistics (min, max, average, etc).
 
+### Functional Diagram
+
+<img src="./docs/FD.png" alt="Functional Diagram" width="100%"/>
+
 ### Performance
 
 We did not run any performance tests on the program, but we did not notice any performance issues during the development of the program. The CSV parsing is pretty fast for our rather large datasets, thanks to our use of the ZIO streams.
