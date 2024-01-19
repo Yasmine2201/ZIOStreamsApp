@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter
 import PowerTemperatureAnalysis._
 import PowerTemperatureFormatter._
 import GlobalStatisticsFormatter._
+import DailyStatisticsFormatter._
+import DailyStatisticsAnalysis._
 
 /** Object containing all the UI logic
   */
@@ -86,7 +88,7 @@ object UI {
     for {
       _    <- printLine("Please enter a date (dd/MM/yyyy): ")
       date <- readDate
-      _    <- printLine(s"Stats for $date:")
+      _    <- printLine("\n\n" + DailyStatisticsFormatter.formatDailyStatistics(getStatsOfTheDay(data, date)) + "\n")
     } yield ()
   }
 
