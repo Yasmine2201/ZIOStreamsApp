@@ -10,7 +10,7 @@ object Main extends ZIOAppDefault {
   override def run: ZIO[Any & (ZIOAppArgs & Scope), Any, Unit] = {
     for {
       data <- loadData
-      _    <- printLine(formatPowerPeakAndTemperature(data))
+      _    <- consoleLoop(data)
     } yield ()
   }
 }
