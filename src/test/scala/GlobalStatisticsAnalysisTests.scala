@@ -5,9 +5,6 @@ import GlobalStatisticsAnalysis._
 import java.time.LocalDate
 
 object GlobalStatsSpec extends ZIOSpecDefault {
-  def getTestPath(filename: String): String = {
-    getClass.getClassLoader.getResource(filename).getFile()
-  }
 
   def spec: Spec[TestEnvironment, Any] = suite("GlobalStatistics")(
     test("getFieldsStatistics should return empty list if no data in period") {
