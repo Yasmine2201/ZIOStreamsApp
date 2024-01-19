@@ -49,16 +49,19 @@ object GlobalStatisticsAnalysis {
       (date.isAfter(start) || date.isEqual(start)) && (date.isBefore(end) || date.isEqual(end))
     }
 
-    fields.map { field =>
-      val fieldName = field.fieldName
-      val values    = filteredData.map(field.fieldSelector)
-      val average   = ChunkMath.average(values)
-      val stdDev    = ChunkMath.standardDeviation(values)
-      val min       = values.min
-      val max       = values.max
-      val count     = values.size
+    if (filteredData.isEmpty)
+      Nil: List[Statistics]
+    else
+      fields.map { field =>
+        val fieldName = field.fieldName
+        val values    = filteredData.map(field.fieldSelector)
+        val average   = ChunkMath.average(values)
+        val stdDev    = ChunkMath.standardDeviation(values)
+        val min       = values.min
+        val max       = values.max
+        val count     = values.size
 
-      Statistics(fieldName, average, stdDev, min, max, count)
+        Statistics(fieldName, average, stdDev, min, max, count)
     }.toList
   }
 

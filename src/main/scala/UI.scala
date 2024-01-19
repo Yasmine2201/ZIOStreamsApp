@@ -27,7 +27,29 @@ object UI {
         startDate <- readDate
         _         <- printLine("Please enter an end date (dd/MM/yyyy): ")
         endDate   <- readDate
-        _         <- printLine(s"Stats for $startDate to $endDate:")
+        _ <- printLine(
+          GlobalStatisticsAnalysis.formatStatisticsTable(
+            "Environmental impact of electricity production and consumption",
+            GlobalStatisticsAnalysis.getCarbonIntensityStatistics(data, startDate, endDate),
+            s"Data between $startDate and $endDate"
+          )
+        )
+        _ <- printLine(
+          "\n\n" +
+            GlobalStatisticsAnalysis.formatStatisticsTable(
+              "Electricty consumption and temperature",
+              GlobalStatisticsAnalysis.getTemperatureAndConsumptionStatistics(data, startDate, endDate),
+              s"Data between $startDate and $endDate"
+            )
+        )
+        _ <- printLine(
+          "\n\n" +
+            GlobalStatisticsAnalysis.formatStatisticsTable(
+              "Production (MW) by supply chain",
+              GlobalStatisticsAnalysis.getProductionBySupplyChain(data, startDate, endDate),
+              s"Data between $startDate and $endDate"
+            )
+        )
       } yield ()
     ),
     "Case study: Temperature vs power peak" -> ((data) => printLine(maxPowerPeakAndMinTemperatureByYear(data)))
@@ -40,35 +62,36 @@ object UI {
     * @return
     *   A formatted string containing information about maximum power peak and minimum temperature entries for each year, with each entry on a new line.
     */
-def maxPowerPeakAndMinTemperatureByYear(data: LoadedData): String = {
-  val output = powerPeakTemperatureGroupedByYear(data)
-    .flatMap { case (year, yearData) =>
-      val (maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperature(yearData)
-      Some(
-        s"""|+------------------------------------------------------------------------+
-            ||                Power and Temperature Summary - Year $year               |
-            |+------------------------------------------------------------------------+
-            || Max Power Peak:   ${maxPowerEntry.powerPeak} MW on ${maxPowerEntry.date}
-            || Min Temperature:  ${minTemperatureEntry.meanTemperature} °C on ${minTemperatureEntry.date}
-            |+------------------------------------------------------------------------+""".stripMargin.trim
-      )
+  def maxPowerPeakAndMinTemperatureByYear(data: LoadedData): String = {
+    val output = powerPeakTemperatureGroupedByYear(data)
+      .flatMap { case (year, yearData) => {
+        val (maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperature(yearData)
+        Some(
+          s"""|+------------------------------------------------------------------------+
+              ||                Power and Temperature Summary - Year $year               |
+              |+------------------------------------------------------------------------+
+              || Max Power Peak:   ${maxPowerEntry.powerPeak} MW on ${maxPowerEntry.date}
+              || Min Temperature:  ${minTemperatureEntry.meanTemperature} °C on ${minTemperatureEntry.date}
+              |+------------------------------------------------------------------------+""".stripMargin.trim
+          )
+        }
     }
     .mkString("\n")
 
-  val pearsonCoef = temperatureAndPowerPeakPearsonCorrelation(data.dailyPowerPeakWithTemperature)
-  val pearsonCoefFormatted = f"\n\t*** Temperature And PowerPeak Pearson Correlation: $pearsonCoef%.2f ***\n"
+    val pearsonCoef = temperatureAndPowerPeakPearsonCorrelation(data.dailyPowerPeakWithTemperature)
+    val pearsonCoefFormatted = f"\n\t*** Temperature And PowerPeak Pearson Correlation: $pearsonCoef%.2f ***\n"
 
-  val conclusion = "+------------------------------------------------------------------------+\n" +
-    "|                           Final Conclusion                             |\n" +
-    "+------------------------------------------------------------------------+\n" +
-    s"| - The correlation coefficient indicates a strong positive correlation. |\n" +
-    s"| - As temperatures decrease, power peak tends to increase.              |\n" +
-    s"| - People tend to use more electricity for heating purposes when        |\n" +
-    s"    temperatures fall                                                    |\n"+
-    "+------------------------------------------------------------------------+\n"
+    val conclusion = "+------------------------------------------------------------------------+\n" +
+      "|                           Final Conclusion                             |\n" +
+      "+------------------------------------------------------------------------+\n" +
+      s"| - The correlation coefficient indicates a strong positive correlation. |\n" +
+      s"| - As temperatures decrease, power peak tends to increase.              |\n" +
+      s"| - People tend to use more electricity for heating purposes when        |\n" +
+      s"    temperatures fall                                                    |\n"+
+      "+------------------------------------------------------------------------+\n"
 
-  s"\n$output$pearsonCoefFormatted$conclusion\n"
-}
+    s"\n$output$pearsonCoefFormatted$conclusion\n"
+  }
 
   val choiceMenu: String =
     "Welcome to our energy analysis tool!\n\nHere are all the interesting interactions you can have with it:\n"

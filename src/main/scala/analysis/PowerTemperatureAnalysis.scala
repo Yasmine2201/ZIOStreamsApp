@@ -27,5 +27,5 @@ def maxPowerPeakAndMinTemperature(yearData: List[DailyPowerPeakWithTemperature])
 def temperatureAndPowerPeakPearsonCorrelation(data: Chunk[DailyPowerPeakWithTemperature]):Double=
   val temperatures: Chunk[Temperature.Celsius] = data.map(line => line.meanTemperature)
   val powerPeaks: Chunk[Power.MW] = data.map(line => line.powerPeak)
-  linearCorrelationCoefficient(powerPeaks, temperatures).abs
+  linearCorrelationCoefficient(powerPeaks, temperatures)
 }
