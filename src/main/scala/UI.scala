@@ -4,6 +4,8 @@ import java.time.LocalDate
 import scala.util.Try
 import java.time.format.DateTimeFormatter
 import PowerTemperatureAnalysis._
+import PowerTemperatureFormatter._
+import GlobalStatisticsFormatter._
 
 /** Object containing all the UI logic
   */
@@ -77,9 +79,9 @@ object UI {
       _         <- printLine("Please enter an end date (dd/MM/yyyy): ")
       endDate   <- readDate
 
-      _ <- printLine("\n\n" + GlobalStatisticsAnalysis.carbonIntensityTab(data, startDate, endDate))
-      _ <- printLine("\n\n" + GlobalStatisticsAnalysis.productionBySupplyChainTab(data, startDate, endDate))
-      _ <- printLine("\n\n" + GlobalStatisticsAnalysis.consumptionAndTemperatureTab(data, startDate, endDate) + "\n")
+      _ <- printLine("\n\n" + GlobalStatisticsFormatter.carbonIntensityTab(data, startDate, endDate))
+      _ <- printLine("\n\n" + GlobalStatisticsFormatter.productionBySupplyChainTab(data, startDate, endDate))
+      _ <- printLine("\n\n" + GlobalStatisticsFormatter.consumptionAndTemperatureTab(data, startDate, endDate) + "\n")
     } yield ()
   }
 
