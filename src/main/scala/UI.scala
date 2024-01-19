@@ -30,44 +30,40 @@ object UI {
         _         <- printLine(s"Stats for $startDate to $endDate:")
       } yield ()
     ),
-    "Case study: Temperature vs power peak"      -> ((data) => 
-      printLine(maxPowerPeakAndMinTemperatureByYear(data))
-    ),
+    "Case study: Temperature vs power peak" -> ((data) => printLine(maxPowerPeakAndMinTemperatureByYear(data)))
   )
 
-  /**
- * Retrieves the information about maximum power peak and minimum temperature entries for each year
- * and formats it into a newline-separated string.
- *
- * @param data The loaded data containing daily power peak with temperature information.
- * @return A formatted string containing information about maximum power peak and minimum temperature
- *         entries for each year, with each entry on a new line.
- */
- def maxPowerPeakAndMinTemperatureByYear(data: LoadedData): String = {
-  val output = powerPeakTemperatureGroupedByYear(data)
-    .flatMap { case (year, yearData) =>
-      val (maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperature(yearData)
-      Some(
-        s"""|+------------------------------------------------------------------------+
+  /** Retrieves the information about maximum power peak and minimum temperature entries for each year and formats it into a newline-separated string.
+    *
+    * @param data
+    *   The loaded data containing daily power peak with temperature information.
+    * @return
+    *   A formatted string containing information about maximum power peak and minimum temperature entries for each year, with each entry on a new line.
+    */
+  def maxPowerPeakAndMinTemperatureByYear(data: LoadedData): String = {
+    val output = powerPeakTemperatureGroupedByYear(data)
+      .flatMap { case (year, yearData) =>
+        val (maxPowerEntry, minTemperatureEntry) = maxPowerPeakAndMinTemperature(yearData)
+        Some(
+          s"""|+------------------------------------------------------------------------+
             ||                Power and Temperature Summary - Year $year               |
             |+------------------------------------------------------------------------+
             || Max Power Peak:   ${maxPowerEntry.powerPeak} MW on ${maxPowerEntry.date}
             || Min Temperature:  ${minTemperatureEntry.meanTemperature} °C on ${minTemperatureEntry.date}
             |+------------------------------------------------------------------------+""".stripMargin.trim
-      )
-    }
-    .mkString("\n")
+        )
+      }
+      .mkString("\n")
 
-  val conclusion = "+------------------------------------------------------------------------+\n" +
-    "|                           Final Conclusion                             |\n" +
-    "+------------------------------------------------------------------------+\n" +
-    "| They are very close! It's logical. When it's colder, people use more   |\n" +
-    "| electricity for heat.                                                  |\n" +
-    "+------------------------------------------------------------------------+\n"
+    val conclusion = "+------------------------------------------------------------------------+\n" +
+      "|                           Final Conclusion                             |\n" +
+      "+------------------------------------------------------------------------+\n" +
+      "| They are very close! It's logical. When it's colder, people use more   |\n" +
+      "| electricity for heat.                                                  |\n" +
+      "+------------------------------------------------------------------------+\n"
 
-  s"\n$output\n$conclusion\n"
-}
-
+    s"\n$output\n$conclusion\n"
+  }
 
   val choiceMenu: String =
     "Welcome to our energy analysis tool!\n\nHere are all the interesting interactions you can have with it:\n"
