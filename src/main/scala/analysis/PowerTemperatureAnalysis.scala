@@ -64,7 +64,7 @@ object PowerTemperatureAnalysis {
       *   A formatted string containing information about maximum power peak and minimum temperature entries for each year, with each entry on a new line.
       */
   def formatPowerPeakAndTemperature(yearsData: Chunk[(Int, DailyPowerPeakWithTemperature, DailyPowerPeakWithTemperature)], correlationCoef: Double): String = {
-    val title = "+-------------------------------------------------------------------------+\n" +
+    val title = "\n+-------------------------------------------------------------------------+\n" +
       "|                Case Study : Power and Temperature Summary               |\n" +
       "+-------------------------------------------------------------------------+\n" +
       "| We want to know the maximum power peak and the minimum temperature for  |\n" +
@@ -92,7 +92,7 @@ object PowerTemperatureAnalysis {
         "| - As daily temperatures decrease, daily power peak tends to increase.   |\n" +
         "| - People tend to use more electricity for heating purposes when         |\n" +
         "|   temperatures fall                                                     |\n" +
-        "+-------------------------------------------------------------------------+\n"
+        "+-------------------------------------------------------------------------+"
 
     title + yearsSummaries + pearsonCoefFormatted + conclusion
   }
