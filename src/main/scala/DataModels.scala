@@ -36,7 +36,7 @@ case class HourlyElectricityProductionAndConsumption(
     consumption: Power.MW // Mean power consumed
 )
 
-/** Max necessary power to cover peak consumption and temprature, dayly */
+/** Max necessary power to cover peak consumption and temprature, daily */
 case class DailyPowerPeakWithTemperature(
     date: LocalDate,
     powerPeak: Power.MW,

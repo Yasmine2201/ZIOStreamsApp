@@ -2,14 +2,14 @@ import scala.Conversion
 
 object Types {
 
-  opaque type Percentage = Float
+  type Percentage = Float
   given Conversion[Float, Percentage] = Percentage(_)
   object Percentage {
     def apply(value: Float): Percentage = value
   }
 
   object CarbonIntensity {
-    opaque type gPerkWh = Float
+    type gPerkWh = Float
     given Conversion[Float, gPerkWh] = gPerkWh(_)
     object gPerkWh {
       def apply(value: Float): gPerkWh = value
@@ -17,9 +17,9 @@ object Types {
   }
 
   object Power {
-    opaque type kW = Float
-    opaque type MW = Float
-    opaque type GW = Float
+    type kW = Float
+    type MW = Float
+    type GW = Float
 
     object kW {
       def apply(value: Float): kW = value
@@ -49,9 +49,9 @@ object Types {
   }
 
   object Consumption {
-    opaque type kWh = Float
-    opaque type MWh = Float
-    opaque type GWh = Float
+    type kWh = Float
+    type MWh = Float
+    type GWh = Float
 
     object kWh {
       def apply(value: Float): kWh = value
@@ -81,7 +81,7 @@ object Types {
   }
 
   object Temperature {
-    opaque type Celsius = Float
+    type Celsius = Float
 
     object Celsius {
       def apply(value: Float): Celsius = value
