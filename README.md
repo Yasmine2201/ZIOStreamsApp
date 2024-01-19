@@ -84,7 +84,9 @@ We decided to use Scala-Test for unit testing; we wrote a few unit tests for the
 We used VSCode as our IDE, with the Metals extension for Scala.
 We also were provided with online self-hosted [VSCode containers](https://coder.com) to make sure we all had the same working environment.
 
-In addition, we used GitHub for project management and version control. We leveraged the GitHub Actions to run the tests on each push and pull request.
+In addition, we used GitHub for project management (GH Projects) and version control. We leveraged the GitHub Actions to run the tests on each push and pull request. 
+
+This tooling allowed us to work efficiently as a team, with a clean & consistent codebase and also a good workflow.
 
 #### Structure
 
