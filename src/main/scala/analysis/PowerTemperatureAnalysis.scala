@@ -24,4 +24,8 @@ def powerPeakTemperatureGroupedByYear(data: LoadedData): Map[Int, List[DailyPowe
 def maxPowerPeakAndMinTemperature(yearData: List[DailyPowerPeakWithTemperature]): (DailyPowerPeakWithTemperature, DailyPowerPeakWithTemperature) =
   (yearData.maxBy(_.powerPeak), yearData.minBy(_.meanTemperature))
 
+def temperatureAndPowerPeakPearsonCorrelation(data: Chunk[DailyPowerPeakWithTemperature]):Double=
+  val temperatures: Chunk[Temperature.Celsius] = data.map(line => line.meanTemperature)
+  val powerPeaks: Chunk[Power.MW] = data.map(line => line.powerPeak)
+  linearCorrelationCoefficient(powerPeaks, temperatures).abs
 }
